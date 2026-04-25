@@ -5,7 +5,7 @@ const path = require("path");
 
 const app = express();
 // CHÚ Ý: Đổi thành false khi deploy lên AWS
-const isLocal = false;
+const isLocal = true;
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "Frontend")));
