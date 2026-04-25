@@ -5,7 +5,7 @@ const path = require("path");
 
 const app = express();
 const isLocal = false; // Đổi thành false khi deploy
-const TOPIC_ARN = "arn:aws:sns:ap-southeast-1:YOUR_ACCOUNT_ID:AppRegistrationTopic";
+const TOPIC_ARN = "arn:aws:sns:ap-southeast-1:101968408100:AppRegistrationTopic";
 
 // Trong route /register-app
 await sns.publish({
