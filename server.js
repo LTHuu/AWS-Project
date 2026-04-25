@@ -4,7 +4,14 @@ const crypto = require("crypto");
 const path = require("path");
 
 const app = express();
-const isLocal = true;
+const isLocal = false; // Đổi thành false khi deploy
+const TOPIC_ARN = "arn:aws:sns:ap-southeast-1:YOUR_ACCOUNT_ID:AppRegistrationTopic";
+
+// Trong route /register-app
+await sns.publish({
+    TopicArn: TOPIC_ARN, // Sử dụng ARN thật
+    Message: `Your AppId is ${appId}`
+}).promise();
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "Frontend")));
