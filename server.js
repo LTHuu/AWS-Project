@@ -20,6 +20,10 @@ if (!isLocal) {
     sns = new AWS.SNS();
 }
 
+app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, "Frontend", "RegisterAppScreen.html"));
+});
+
 app.post("/register-app", async (req, res) => {
     const { email, appName } = req.body;
     const appId = crypto.randomUUID();
