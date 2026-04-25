@@ -36,7 +36,7 @@ app.post("/register-app", async (req, res) => {
 
         // 1. Lưu vào DynamoDB
         await dynamodb.put({
-            TableName: "AppRegistry",
+            TableName: "AppRegister",
             Item: {
                 appId,
                 owner: appName,
