@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Register App</title>
+  <link rel="stylesheet" href="RegisterAppScreen.css" />
+</head>
+
+<body>
+
+  <div class="container">
+    <div class="card">
+      <h1 class="title">App Registration</h1>
+
+      <div class="logo">
+        <img src="../img/logo.png" alt="Logo">
+      </div>
+
+      <p class="subtitle">Register your application to get AppId</p>
+
+      <form id="registerForm">
+        <div class="form-group">
+          <input type="email" id="email" placeholder="Owner Email" required />
+        </div>
+
+        <div class="form-group">
+          <input type="text" id="appName" placeholder="Application Name" required />
+        </div>
+
+        <button type="submit" class="btn">Register</button>
+      </form>
+
+      <div id="loading" class="loading"></div>
+      <div id="result" class="success"></div>
+      <div id="error" class="error"></div>
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById("registerForm");
+    const loadingEl = document.getElementById("loading");
+    const resultEl = document.getElementById("result");
+    const errorEl = document.getElementById("error");
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById("email").value.trim();
+      const appName = document.getElementById("appName").value.trim();
+
+      loadingEl.innerText = "⏳ Registering...";
+      resultEl.innerText = "";
+      errorEl.innerText = "";
+
+      try {
+        const res = await fetch("/register-app", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, appName }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.message || "Register failed");
+        }
+
+        loadingEl.innerText = "";
+
+        resultEl.innerHTML = `
+          ✅ <strong>Registered successfully!</strong><br/>
+          AppId: <b>${data.appId}</b><br/>
+          Prefix: <b>${data.prefix}</b><br/>
+          📩 Check your email to verify.
+        `;
+
+      } catch (err) {
+        loadingEl.innerText = "";
+        errorEl.innerText = "❌ " + err.message;
+      }
+    });
+  </script>
+
+</body>
+
+</html>

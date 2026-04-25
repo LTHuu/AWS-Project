@@ -1,0 +1,78 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f8;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.card {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    width: 340px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.title {
+    font-size: 24px;
+}
+
+.logo img {
+    width: 80px;
+    margin: 10px 0;
+}
+
+.subtitle {
+    font-size: 14px;
+    color: #666;
+}
+
+.form-group {
+    margin: 12px 0;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.btn {
+    width: 100%;
+    padding: 10px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background: #0056b3;
+}
+
+.loading {
+    margin-top: 10px;
+    color: #555;
+}
+
+.success {
+    margin-top: 10px;
+    color: green;
+}
+
+.error {
+    margin-top: 10px;
+    color: red;
+}
