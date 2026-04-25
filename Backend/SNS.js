@@ -1,6 +1,12 @@
+// Backend/SNS.js
+const AWS = require("aws-sdk");
 const sns = new AWS.SNS();
 
-await sns.publish({
-    TopicArn: "your-topic-arn",
-    Message: "Please verify your email"
-}).promise();
+const sendEmail = async (topicArn, message) => {
+    return await sns.publish({
+        TopicArn: topicArn,
+        Message: message
+    }).promise();
+};
+
+module.exports = { sendEmail };
