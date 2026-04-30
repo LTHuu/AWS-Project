@@ -1,5 +1,4 @@
 Chạy terraform/////////////////////// Cloudshell AWS
-cd infra
 terraform init
 terraform apply -auto-approve
 

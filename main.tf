@@ -262,3 +262,42 @@ resource "aws_ecs_service" "app" {
 
   depends_on = [aws_lb_listener.app]
 }
+
+# -------------------
+# SQS FIFO (Log Queue)
+# -------------------
+resource "aws_sqs_queue" "log_queue" {
+  name                        = "log-queue.fifo"
+  fifo_queue                  = true
+  content_based_deduplication = true
+
+  visibility_timeout_seconds  = 30
+  message_retention_seconds   = 86400 # 1 ngày
+
+  receive_wait_time_seconds   = 10 # long polling
+}
+
+# -------------------
+# SQS DLQ
+# -------------------
+resource "aws_sqs_queue" "log_dlq" {
+  name       = "log-dlq.fifo"
+  fifo_queue = true
+}
+
+resource "aws_sqs_queue_redrive_policy" "log_redrive" {
+  queue_url = aws_sqs_queue.log_queue.id
+
+  redrive_policy = jsonencode({
+    deadLetterTargetArn = aws_sqs_queue.log_dlq.arn
+    maxReceiveCount     = 5
+  })
+}
+
+output "sqs_queue_url" {
+  value = aws_sqs_queue.log_queue.id
+}
+
+output "sqs_queue_arn" {
+  value = aws_sqs_queue.log_queue.arn
+}
