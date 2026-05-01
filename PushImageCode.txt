@@ -26,3 +26,51 @@ aws ecr get-login-password --region ap-southeast-1 | docker login --username AWS
 docker tag app-register:latest 101968408100.dkr.ecr.ap-southeast-1.amazonaws.com/app-register:latest
 
 docker push 101968408100.dkr.ecr.ap-southeast-1.amazonaws.com/app-register:latest
+
+GỌI API TẠO APP (lấy access key)///////////////////
+$response = Invoke-RestMethod -Method POST `
+-Uri "http://app-alb-475944469.ap-southeast-1.elb.amazonaws.com/register-app" `
+-Headers @{ "Content-Type" = "application/json" } `
+-Body '{"email":"test@gmail.com","appName":"demo"}'
+
+$response
+
+
+SET ACCESS KEY (từ API)//////////////
+$env:AWS_ACCESS_KEY_ID="ACCESS_KEY_TU_API"
+$env:AWS_SECRET_ACCESS_KEY="SECRET_KEY_TU_API"
+$env:AWS_DEFAULT_REGION="ap-southeast-1"
+
+TEST IAM (check quyền)/////////////
+aws logs describe-log-groups
+
+TẠO LOG GROUP////////////
+aws logs create-log-group --log-group-name demo-log
+
+TẠO LOG STREAM//////////
+aws logs create-log-stream `
+--log-group-name demo-log `
+--log-stream-name stream1
+
+TẠO TIMESTAMP CHUẨN/////////////
+$timestamp = [int64]((Get-Date).AddSeconds(-10).ToUniversalTime().Subtract([datetime]'1970-01-01').TotalMilliseconds)
+
+Gửi LOG///////////
+aws logs put-log-events `
+--log-group-name demo-log `
+--log-stream-name stream1 `
+--log-events timestamp=$timestamp,message="hello from IAM user"
+
+
+
+🔍 8. KIỂM TRA//////////////////////
+
+👉 Vào AWS:
+
+CloudWatch
+Logs → demo-log
+stream → stream1
+
+👉 sẽ thấy:
+
+hello from IAM user

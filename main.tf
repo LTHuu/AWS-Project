@@ -183,7 +183,9 @@ resource "aws_iam_policy" "cw_logs_policy" {
         Action = [
           "logs:CreateLogGroup",
           "logs:CreateLogStream",
-          "logs:PutLogEvents"
+          "logs:PutLogEvents",
+          "logs:DescribeLogGroups",
+          "logs:DescribeLogStreams"
         ]
         Resource = "*"
       }

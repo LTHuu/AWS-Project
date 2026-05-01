@@ -1,6 +1,5 @@
 const express = require("express");
 const AWS = require("aws-sdk");
-const iam = new AWS.IAM();
 const crypto = require("crypto");
 const path = require("path");
 
