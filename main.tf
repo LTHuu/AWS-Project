@@ -134,6 +134,47 @@ resource "aws_iam_role_policy_attachment" "ecs_execution_policy" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
+resource "aws_iam_role" "lambda_exec" {
+  name = "lambda_exec_role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Action = "sts:AssumeRole"
+      Effect = "Allow"
+      Principal = {
+        Service = "lambda.amazonaws.com"
+      }
+    }]
+  })
+}
+
+resource "aws_iam_role_policy" "lambda_policy" {
+  role = aws_iam_role.lambda_exec.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = [
+          "sns:Subscribe"
+        ]
+        Effect   = "Allow"
+        Resource = "*"
+      },
+      {
+        Action = [
+          "logs:CreateLogGroup",
+          "logs:CreateLogStream",
+          "logs:PutLogEvents"
+        ]
+        Effect   = "Allow"
+        Resource = "*"
+      }
+    ]
+  })
+}
+
 # 👉 TASK ROLE (QUAN TRỌNG)
 resource "aws_iam_role" "ecs_task_role" {
   name = "ecsTaskRole"
@@ -217,6 +258,13 @@ resource "aws_ecs_task_definition" "app" {
           hostPort      = 3000
         }
       ]
+
+      environment = [
+  {
+    name  = "SNS_TOPIC_ARN"
+    value = aws_sns_topic.app.arn
+  }
+]
 
       logConfiguration = {
         logDriver = "awslogs",
@@ -326,4 +374,23 @@ output "sqs_queue_url" {
 
 output "sqs_queue_arn" {
   value = aws_sqs_queue.log_queue.arn
+}
+
+#-------------
+# Lambda
+#------------
+resource "aws_lambda_function" "sns_subscribe" {
+  function_name = "sns-subscribe-lambda"
+  role          = aws_iam_role.lambda_exec.arn
+  handler       = "lambda_function.lambda_handler"
+  runtime       = "python3.12"
+
+  filename         = "lambda_function.zip"
+  source_code_hash = filebase64sha256("lambda_function.zip")
+
+  environment {
+  variables = {
+    SNS_TOPIC_ARN = aws_sns_topic.app.arn
+  }
+}
 }

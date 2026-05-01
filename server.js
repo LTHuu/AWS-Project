@@ -73,7 +73,7 @@ app.post("/register-app", async (req, res) => {
         // 2. Gửi thông báo qua SNS
         // THAY "your-topic-arn" bằng mã ARN thật từ SNS Console của bạn
         await sns.publish({
-            TopicArn: "arn:aws:sns:ap-southeast-1:101968408100:AppRegistrationTopic",
+            TopicArn: process.env.SNS_TOPIC_ARN,
             Message: `Your AppId is ${appId}. Please verify your application.`
         }).promise();
 
