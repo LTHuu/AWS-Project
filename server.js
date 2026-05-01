@@ -2,6 +2,7 @@ const express = require("express");
 const AWS = require("aws-sdk");
 const crypto = require("crypto");
 const path = require("path");
+const lambda = new AWS.Lambda();
 
 const app = express();
 // CHÚ Ý: Đổi thành false khi deploy lên AWS
@@ -52,11 +53,10 @@ async function createIamUser(username) {
 app.post("/register-app", async (req, res) => {
     const { email, appName } = req.body;
     const appId = crypto.randomUUID();
-    const prefix = appName.substring(0, 3).toLowerCase();
 
     try {
         if (isLocal) {
-            return res.json({ appId, prefix, message: "LOCAL MODE (no AWS)" });
+            return res.json({ appId, message: "LOCAL MODE (no AWS)" });
         }
 
         // 1. Lưu vào DynamoDB
@@ -66,10 +66,19 @@ app.post("/register-app", async (req, res) => {
                 appId,
                 owner: appName,
                 ownerEmail: email,
-                prefix
             }
         }).promise();
 
+        await lambda.invoke({
+            FunctionName: "sns-subscribe-lambda",
+            InvocationType: "RequestResponse",
+            Payload: JSON.stringify({
+                body: JSON.stringify({
+                    appId: appId,
+                    email: email
+                })
+            })
+        }).promise();
         // 2. Gửi thông báo qua SNS
         // THAY "your-topic-arn" bằng mã ARN thật từ SNS Console của bạn
         await sns.publish({
@@ -82,7 +91,6 @@ app.post("/register-app", async (req, res) => {
 
         res.json({
             appId,
-            prefix,
             accessKey: iamUser.accessKey,
             secretKey: iamUser.secretKey
         });

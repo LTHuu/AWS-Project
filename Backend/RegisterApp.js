@@ -2,14 +2,12 @@ app.post("/register-app", async (req, res) => {
     const { email, appName } = req.body;
 
     const appId = crypto.randomUUID();
-    const prefix = appName.substring(0, 3).toLowerCase();
 
     try {
         if (isLocal) {
             // 👉 fake dữ liệu (demo local)
             return res.json({
                 appId,
-                prefix,
                 message: "LOCAL MODE (no AWS)"
             });
         }
@@ -21,7 +19,6 @@ app.post("/register-app", async (req, res) => {
                 appId,
                 owner: appName,
                 ownerEmail: email,
-                prefix
             }
         }).promise();
 
@@ -30,7 +27,7 @@ app.post("/register-app", async (req, res) => {
             Message: `Your AppId is ${appId}`
         }).promise();
 
-        res.json({ appId, prefix });
+        res.json({ appId });
 
     } catch (err) {
         res.status(500).json({ message: err.message });

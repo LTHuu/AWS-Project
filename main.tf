@@ -337,6 +337,22 @@ resource "aws_ecs_service" "app" {
   depends_on = [aws_lb_listener.app]
 }
 
+resource "aws_iam_role_policy" "ecs_lambda_invoke" {
+  name = "ecs-lambda-invoke"
+  role = aws_iam_role.ecs_task_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = "lambda:InvokeFunction"
+        Resource = "arn:aws:lambda:ap-southeast-1:101968408100:function:sns-subscribe-lambda"
+      }
+    ]
+  })
+}
+
 # -------------------
 # SQS FIFO (Log Queue)
 # -------------------
